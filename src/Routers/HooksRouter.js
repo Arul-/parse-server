@@ -34,7 +34,7 @@ export class HooksRouter extends PromiseRouter {
           return { functionName: i };
         });
         const webhooks = functions.map(i => i.functionName);
-        codes = codes.filter(i => webhooks.includes(i.functionName));
+        codes = codes.filter(i => !webhooks.includes(i.functionName));
         return { response: [...codes, ...functions] };
       },
       err => {
