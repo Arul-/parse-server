@@ -1,4 +1,4 @@
-import {Parse} from 'parse/node';
+import { Parse } from 'parse/node';
 import PromiseRouter from '../PromiseRouter';
 import * as middleware from '../middlewares';
 import * as triggers from '../triggers';
@@ -30,10 +30,12 @@ export class HooksRouter extends PromiseRouter {
     return hooksController.getFunctions().then(
       functions => {
         functions = functions || [];
-        const codes = triggers.getFunctionNames(Parse.applicationId).map(i => {
-          return {functionName: i}
+        var codes = triggers.getFunctionNames(Parse.applicationId).map(i => {
+          return { functionName: i };
         });
-        return {response: [...codes, ...functions]};
+        const webhooks = (i => i.functionName)(functions);
+        codes = codes.filter(i => webhooks.includes(i.functionName));
+        return { response: [...codes, ...functions] };
       },
       err => {
         throw err;
