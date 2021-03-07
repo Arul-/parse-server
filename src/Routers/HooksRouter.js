@@ -1,6 +1,7 @@
-import { Parse } from 'parse/node';
+import {Parse} from 'parse/node';
 import PromiseRouter from '../PromiseRouter';
 import * as middleware from '../middlewares';
+import * as triggers from '../triggers';
 
 export class HooksRouter extends PromiseRouter {
   createHook(aHook, config) {
@@ -28,7 +29,11 @@ export class HooksRouter extends PromiseRouter {
 
     return hooksController.getFunctions().then(
       functions => {
-        return { response: functions || [] };
+        functions = functions || [];
+        const codes = triggers.getFunctionNames(Parse.applicationId).map(i => {
+          return {functionName: i}
+        });
+        return {response: [...codes, ...functions]};
       },
       err => {
         throw err;
