@@ -33,7 +33,7 @@ export class HooksRouter extends PromiseRouter {
         var codes = triggers.getFunctionNames(Parse.applicationId).map(i => {
           return { functionName: i };
         });
-        const webhooks = (i => i.functionName)(functions);
+        const webhooks = functions.map(i => i.functionName);
         codes = codes.filter(i => webhooks.includes(i.functionName));
         return { response: [...codes, ...functions] };
       },
