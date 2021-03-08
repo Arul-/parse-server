@@ -1,4 +1,4 @@
-import { Parse } from 'parse/node';
+import {Parse} from 'parse/node';
 import PromiseRouter from '../PromiseRouter';
 import * as middleware from '../middlewares';
 import * as triggers from '../triggers';
@@ -21,9 +21,10 @@ export class HooksRouter extends PromiseRouter {
     if (req.params.functionName) {
       return hooksController.getFunction(req.params.functionName).then(foundFunction => {
         if (!foundFunction) {
-          foundFunction = triggers.getFunction(req.params.functionName, Parse.applicationId);
+          foundFunction = triggers.getValidator(req.params.functionName, Parse.applicationId);
           if (!foundFunction)
             throw new Parse.Error(143, `no function named: ${req.params.functionName} is defined`);
+          foundFunction = {functionName:req.params.functionName,...foundFunction};
         }
         return Promise.resolve({ response: foundFunction });
       });
