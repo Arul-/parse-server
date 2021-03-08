@@ -21,7 +21,9 @@ export class HooksRouter extends PromiseRouter {
     if (req.params.functionName) {
       return hooksController.getFunction(req.params.functionName).then(foundFunction => {
         if (!foundFunction) {
-          throw new Parse.Error(143, `no function named: ${req.params.functionName} is defined`);
+          foundFunction = triggers.getFunction(req.params.functionName, Parse.applicationId);
+          if (!foundFunction)
+            throw new Parse.Error(143, `no function named: ${req.params.functionName} is defined`);
         }
         return Promise.resolve({ response: foundFunction });
       });
