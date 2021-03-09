@@ -153,6 +153,18 @@ export function handleParseHeaders(req, res, next) {
   var isMaster = info.masterKey === req.config.masterKey;
 
   if (isMaster) {
+    if(info.sessionToken){
+      auth.getAuthForSessionToken({
+        config: req.config,
+        installationId: info.installationId,
+        sessionToken: info.sessionToken,
+        isMaster: true,
+      }).then(auth => {
+        req.auth = auth;
+        next();
+      });
+      return;
+    }
     req.auth = new auth.Auth({
       config: req.config,
       installationId: info.installationId,
@@ -168,6 +180,18 @@ export function handleParseHeaders(req, res, next) {
     req.config.readOnlyMasterKey &&
     isReadOnlyMaster
   ) {
+    if(info.sessionToken){
+      auth.getAuthForSessionToken({
+        config: req.config,
+        installationId: info.installationId,
+        sessionToken: info.sessionToken,
+        isMaster: true,
+      }).then(auth => {
+        req.auth = auth;
+        next();
+      });
+      return;
+    }
     req.auth = new auth.Auth({
       config: req.config,
       installationId: info.installationId,
