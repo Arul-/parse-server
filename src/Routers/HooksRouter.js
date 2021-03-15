@@ -58,7 +58,7 @@ export class HooksRouter extends PromiseRouter {
           return Promise.resolve({ response: foundTrigger });
         });
     }
-    return Promise.resolve({response: triggers.getTriggers()});
+    return Promise.resolve({response: triggers.getTriggers(Parse.applicationId)});
   }
 
   handleDelete(req) {
