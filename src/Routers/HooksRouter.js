@@ -58,8 +58,7 @@ export class HooksRouter extends PromiseRouter {
           return Promise.resolve({ response: foundTrigger });
         });
     }
-
-    return hooksController.getTriggers().then(triggers => ({ response: triggers || [] }));
+    return Promise.resolve({response: triggers.getTriggers()});
   }
 
   handleDelete(req) {

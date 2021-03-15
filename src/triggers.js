@@ -212,6 +212,25 @@ export function getFunctionNames(applicationId) {
   return functionNames;
 }
 
+export function getTriggers(applicationId) {
+  const store = _triggerStore[applicationId] && _triggerStore[applicationId][Category.Triggers] || {};
+  const triggerNames = [];
+
+  const extractTriggerNames = (namespace, store) => {
+    Object.keys(store).forEach(name => {
+      const value = store[name];
+      if (typeof value === 'function') {
+        triggerNames.push({functionName:namespace, className:name});
+      } else {
+        extractTriggerNames(name, value);
+      }
+    });
+  };
+
+  extractTriggerNames(null, store);
+  return triggerNames;
+}
+
 export function getJob(jobName, applicationId) {
   return get(Category.Jobs, jobName, applicationId);
 }
