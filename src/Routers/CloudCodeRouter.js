@@ -131,9 +131,9 @@ export class CloudCodeRouter extends PromiseRouter {
   }
   static getCloudCode(req) {
     const config = req.config || {};
-    const dirName = __dirname.split('node_modules')[0];
-    const cloudLocation = ('' + config.cloud).replace(dirName, '');
+    const cloudLocation = path.dirname('' + config.cloud);
     var cloudFiles = [];
+
     function dirLoop(dir) {
       fs.readdirSync(dir).forEach(file => {
         const absolute = path.join(dir, file);
@@ -141,7 +141,8 @@ export class CloudCodeRouter extends PromiseRouter {
         else return cloudFiles.push(absolute);
       });
     }
+
     dirLoop(cloudLocation);
-    return cloudFiles;
+    return {response: cloudFiles.map(i => i.replace(cloudLocation + '/', ''))};
   }
 }
