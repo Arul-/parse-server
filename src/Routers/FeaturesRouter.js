@@ -1,4 +1,4 @@
-import { version } from '../../package.json';
+import {version} from '../../package.json';
 import PromiseRouter from '../PromiseRouter';
 import * as middleware from '../middlewares';
 
@@ -21,6 +21,7 @@ export class FeaturesRouter extends PromiseRouter {
         },
         cloudCode: {
           jobs: true,
+          viewCode: true
         },
         logs: {
           level: true,
