@@ -156,8 +156,8 @@ export class CloudCodeRouter extends PromiseRouter {
     const config = req.config || {};
     const cloudLocation = path.dirname('' + config.cloud);
     const file = path.join(cloudLocation, req.params[0]);
-    if(!fs.existsSync(file))
-      throw 'Cloud file does not exist.';
+    if (!fs.existsSync(file))
+      return {status: 404, text: 'Cloud file does not exist.'};
     return {text: fs.readFileSync(file), headers: {'Content-Type': 'plain/text'}};
   }
 }
