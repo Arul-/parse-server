@@ -139,17 +139,29 @@ export class CloudCodeRouter extends PromiseRouter {
     const config = req.config || {};
     const cloudLocation = path.dirname('' + config.cloud);
     var cloudFiles = [];
-
+    let timestamp = 0;
     function dirLoop(dir) {
       fs.readdirSync(dir).forEach(file => {
         const absolute = path.join(dir, file);
         if (fs.statSync(absolute).isDirectory()) return dirLoop(absolute);
-        else return cloudFiles.push(absolute);
+        else {
+          timestamp = Math.max(fs.statSync(absolute).ctime, timestamp);
+          return cloudFiles.push(absolute);
+        }
       });
     }
 
     dirLoop(cloudLocation);
-    return {response: cloudFiles.map(i => i.replace(cloudLocation + '/', ''))};
+    cloudFiles = cloudFiles.map(i => i.replace(cloudLocation + '/', ''));
+    return {
+      response: [{
+        version:1,
+        parseVersion:Parse.CoreManager.get('VERSION'),
+        timestamp,
+        versions: JSON.stringify(cloudFiles.reduce((acc, curr) => (acc[curr] = 1, acc), {})),
+        checksums: JSON.stringify(cloudFiles.reduce((acc, curr) => (acc[curr] = 1, acc), {})),
+      }]
+    };
   }
 
   static getCloudCodeFile(req) {
