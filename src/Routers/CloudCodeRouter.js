@@ -1,6 +1,9 @@
 import PromiseRouter from '../PromiseRouter';
 import Parse from 'parse/node';
 import rest from '../rest';
+import fs from 'fs';
+import path from 'path';
+
 const triggers = require('../triggers');
 const middleware = require('../middlewares');
 
@@ -52,6 +55,12 @@ export class CloudCodeRouter extends PromiseRouter {
       '/cloud_code/jobs/:objectId',
       middleware.promiseEnforceMasterKeyAccess,
       CloudCodeRouter.deleteJob
+    );
+    this.route(
+      'GET',
+      '/releases/latest',
+      middleware.promiseEnforceMasterKeyAccess,
+      CloudCodeRouter.getCloudCode
     );
   }
 
@@ -119,5 +128,20 @@ export class CloudCodeRouter extends PromiseRouter {
           response,
         };
       });
+  }
+  static getCloudCode(req) {
+    const config = req.config || {};
+    const dirName = __dirname.split('node_modules')[0];
+    const cloudLocation = ('' + config.cloud).replace(dirName, '');
+    var cloudFiles = [];
+    function dirLoop(dir) {
+      fs.readdirSync(dir).forEach(file => {
+        const absolute = path.join(dir, file);
+        if (fs.statSync(absolute).isDirectory()) return dirLoop(absolute);
+        else return cloudFiles.push(absolute);
+      });
+    }
+    dirLoop(cloudLocation);
+    return cloudFiles;
   }
 }
