@@ -155,6 +155,9 @@ export class CloudCodeRouter extends PromiseRouter {
   static getCloudCodeFile(req) {
     const config = req.config || {};
     const cloudLocation = path.dirname('' + config.cloud);
-    return {text: fs.readFileSync(path.join(cloudLocation, 'main.js')), headers: {'Content-Type': 'plain/text'}};
+    const file = path.join(cloudLocation, req.params[0]);
+    if(!fs.existsSync(file))
+      throw 'Cloud file does not exist.';
+    return {text: fs.readFileSync(file), headers: {'Content-Type': 'plain/text'}};
   }
 }
