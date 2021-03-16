@@ -62,6 +62,12 @@ export class CloudCodeRouter extends PromiseRouter {
       middleware.promiseEnforceMasterKeyAccess,
       CloudCodeRouter.getCloudCode
     );
+    this.route(
+      'GET',
+      '/cloud_code/*',
+      middleware.promiseEnforceMasterKeyAccess,
+      CloudCodeRouter.getCloudCodeFile
+    );
   }
 
   static getJobs(req) {
@@ -144,5 +150,11 @@ export class CloudCodeRouter extends PromiseRouter {
 
     dirLoop(cloudLocation);
     return {response: cloudFiles.map(i => i.replace(cloudLocation + '/', ''))};
+  }
+
+  static getCloudCodeFile(req) {
+    const config = req.config || {};
+    const cloudLocation = path.dirname('' + config.cloud);
+    return {text: fs.readFileSync(path.join(cloudLocation, 'main.js')), headers: {'Content-Type': 'plain/text'}};
   }
 }
