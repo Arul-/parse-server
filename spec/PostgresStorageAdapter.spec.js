@@ -23,6 +23,8 @@ describe_only_db('postgres')('PostgresStorageAdapter', () => {
     const config = Config.get('test');
     adapter = config.database.adapter;
     await adapter.deleteAllClasses();
+    const config = Config.get('test');
+    config.schemaCache.clear();
     await adapter.performInitialization({ VolatileClassesSchemas: [] });
   });
 
@@ -236,12 +238,18 @@ describe_only_db('postgres')('PostgresStorageAdapter', () => {
   });
 
   it('should use index for caseInsensitive query', async () => {
+    await adapter.deleteAllClasses();
+    const config = Config.get('test');
+    config.schemaCache.clear();
+    await adapter.performInitialization({ VolatileClassesSchemas: [] });
+
+    const database = Config.get(Parse.applicationId).database;
+    await database.loadSchema({ clearCache: true });
     const tableName = '_User';
     const user = new Parse.User();
     user.set('username', 'Bugs');
     user.set('password', 'Bunny');
     await user.signUp();
-    const database = Config.get(Parse.applicationId).database;
 
     //Postgres won't take advantage of the index until it has a lot of records because sequential is faster for small db's
     const client = adapter._client;
@@ -290,12 +298,19 @@ describe_only_db('postgres')('PostgresStorageAdapter', () => {
   });
 
   it('should use index for caseInsensitive query using default indexname', async () => {
+    await adapter.deleteAllClasses();
+    const config = Config.get('test');
+    config.schemaCache.clear();
+    await adapter.performInitialization({ VolatileClassesSchemas: [] });
+
+    const database = Config.get(Parse.applicationId).database;
+    await database.loadSchema({ clearCache: true });
     const tableName = '_User';
     const user = new Parse.User();
     user.set('username', 'Bugs');
     user.set('password', 'Bunny');
     await user.signUp();
-    const database = Config.get(Parse.applicationId).database;
+
     const fieldToSearch = 'username';
     //Create index before data is inserted
     const schema = await new Parse.Schema('_User').get();
@@ -377,6 +392,45 @@ describe_only_db('postgres')('PostgresStorageAdapter', () => {
         expect(innerElement.Plan['Index Name']).toContain(uniqueField);
       });
     });
+  });
+
+  it('should watch _SCHEMA changes', async () => {
+    const enableSchemaHooks = true;
+    await reconfigureServer({
+      databaseAdapter: undefined,
+      databaseURI,
+      collectionPrefix: '',
+      databaseOptions: {
+        enableSchemaHooks,
+      },
+    });
+    const { database } = Config.get(Parse.applicationId);
+    const { adapter } = database;
+    expect(adapter.enableSchemaHooks).toBe(enableSchemaHooks);
+    spyOn(adapter, '_onchange');
+    enableSchemaHooks;
+
+    const otherInstance = new PostgresStorageAdapter({
+      uri: databaseURI,
+      collectionPrefix: '',
+      databaseOptions: { enableSchemaHooks },
+    });
+    expect(otherInstance.enableSchemaHooks).toBe(enableSchemaHooks);
+    otherInstance._listenToSchema();
+
+    await otherInstance.createClass('Stuff', {
+      className: 'Stuff',
+      fields: {
+        objectId: { type: 'String' },
+        createdAt: { type: 'Date' },
+        updatedAt: { type: 'Date' },
+        _rperm: { type: 'Array' },
+        _wperm: { type: 'Array' },
+      },
+      classLevelPermissions: undefined,
+    });
+    await new Promise(resolve => setTimeout(resolve, 500));
+    expect(adapter._onchange).toHaveBeenCalled();
   });
 });
 

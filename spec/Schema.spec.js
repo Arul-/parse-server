@@ -3,7 +3,6 @@
 const Config = require('../lib/Config');
 const SchemaController = require('../lib/Controllers/SchemaController');
 const dd = require('deep-diff');
-const TestUtils = require('../lib/TestUtils');
 
 let config;
 
@@ -23,12 +22,6 @@ const hasAllPODobject = () => {
 describe('SchemaController', () => {
   beforeEach(() => {
     config = Config.get('test');
-  });
-
-  afterEach(async () => {
-    await config.database.schemaCache.clear();
-    await TestUtils.destroyAllDataPermanently(false);
-    await config.database.adapter.performInitialization({ VolatileClassesSchemas: [] });
   });
 
   it('can validate one object', done => {
@@ -211,7 +204,7 @@ describe('SchemaController', () => {
       return (
         config.database
           .loadSchema()
-          // Create a valid class
+        // Create a valid class
           .then(schema => schema.validateObject('Stuff', { foo: 'bar' }))
           .then(schema => {
             const find = {};
@@ -260,7 +253,7 @@ describe('SchemaController', () => {
     return (
       config.database
         .loadSchema()
-        // Create a valid class
+      // Create a valid class
         .then(schema => schema.validateObject('Stuff', { foo: 'bar' }))
         .then(schema => {
           const count = {};
@@ -854,10 +847,11 @@ describe('SchemaController', () => {
       });
   });
 
-  it('creates non-custom classes which include relation field', done => {
+  it('creates non-custom classes which include relation field', async done => {
+    await reconfigureServer();
     config.database
       .loadSchema()
-      //as `_Role` is always created by default, we only get it here
+    //as `_Role` is always created by default, we only get it here
       .then(schema => schema.getOneSchema('_Role'))
       .then(actualSchema => {
         const expectedSchema = {
@@ -1313,7 +1307,8 @@ describe('SchemaController', () => {
       );
   });
 
-  it('properly handles volatile _Schemas', done => {
+  it('properly handles volatile _Schemas', async done => {
+    await reconfigureServer();
     function validateSchemaStructure(schema) {
       expect(Object.prototype.hasOwnProperty.call(schema, 'className')).toBe(true);
       expect(Object.prototype.hasOwnProperty.call(schema, 'fields')).toBe(true);
@@ -1348,17 +1343,6 @@ describe('SchemaController', () => {
       })
       .then(done)
       .catch(done.fail);
-  });
-
-  it('setAllClasses return classes if cache fails', async () => {
-    const schema = await config.database.loadSchema();
-
-    spyOn(schema._cache, 'setAllClasses').and.callFake(() => Promise.reject('Oops!'));
-    const errorSpy = spyOn(console, 'error').and.callFake(() => {});
-    const allSchema = await schema.setAllClasses();
-
-    expect(allSchema).toBeDefined();
-    expect(errorSpy).toHaveBeenCalledWith('Error saving schema to cache:', 'Oops!');
   });
 
   it('should not throw on null field types', async () => {

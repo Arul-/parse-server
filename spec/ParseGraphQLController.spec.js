@@ -28,12 +28,20 @@ describe('ParseGraphQLController', () => {
     return graphQLConfigRecord;
   };
 
+<<<<<<< HEAD
   beforeAll(async () => {
     parseServer = await global.reconfigureServer({
       schemaCacheTTL: 100,
     });
     databaseController = parseServer.config.databaseController;
     cacheController = parseServer.config.cacheController;
+=======
+  beforeEach(async () => {
+    if (!parseServer) {
+      parseServer = await global.reconfigureServer();
+      databaseController = parseServer.config.databaseController;
+      cacheController = parseServer.config.cacheController;
+>>>>>>> a02014f... Improve single schema cache (#7214)
 
     const defaultFind = databaseController.find.bind(databaseController);
     databaseController.find = async (className, query, ...args) => {

@@ -140,14 +140,9 @@ const masterKeyHeaders = {
 };
 
 describe('schemas', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
+    await reconfigureServer();
     config = Config.get('test');
-  });
-
-  afterEach(async () => {
-    await config.database.schemaCache.clear();
-    await TestUtils.destroyAllDataPermanently(false);
-    await config.database.adapter.performInitialization({ VolatileClassesSchemas: [] });
   });
 
   it('requires the master key to get all schemas', done => {
@@ -2330,7 +2325,7 @@ describe('schemas', () => {
           const perm = {
             find: {},
           };
-          // let the user find
+            // let the user find
           perm['find'][user.id] = true;
           return setPermissionsOnClass('AClass', perm);
         });
