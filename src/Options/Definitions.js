@@ -93,6 +93,12 @@ module.exports.ParseServerOptions = {
     action: parsers.objectParser,
     default: {},
   },
+  dashboardOptions: {
+    env: 'PARSE_SERVER_DASHBOARD_OPTIONS',
+    help: 'Options for Parse dashboard.',
+    action: parsers.objectParser,
+    default: {},
+  },
   databaseAdapter: {
     env: 'PARSE_SERVER_DATABASE_ADAPTER',
     help: 'Adapter module for the database',
@@ -685,6 +691,14 @@ module.exports.IdempotencyOptions = {
       'The duration in seconds after which a request record is discarded from the database, defaults to 300s.',
     action: parsers.numberParser('ttl'),
     default: 300,
+  },
+};
+module.exports.DashboardOptions = {
+  cloudFileView: {
+    env: 'PARSE_SERVER_DASHBOARD_OPTIONS_CLOUD_FILE_VIEW',
+    help: 'Whether the Parse Dashboard can view cloud files.',
+    action: parsers.booleanParser,
+    default: false,
   },
 };
 module.exports.AccountLockoutOptions = {

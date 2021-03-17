@@ -17,6 +17,7 @@
  * @property {Number|Boolean} cluster Run with cluster, optionally set the number of processes default to os.cpus().length
  * @property {String} collectionPrefix A collection prefix for the classes
  * @property {CustomPagesOptions} customPages custom pages for password validation and reset
+ * @property {DashboardOptions} dashboardOptions Options for Parse dashboard
  * @property {Adapter<StorageAdapter>} databaseAdapter Adapter module for the database
  * @property {Any} databaseOptions Options to pass to the mongodb client
  * @property {String} databaseURI The full URI to your database. Supported databases are mongodb or postgres.
@@ -156,6 +157,11 @@
  * @interface IdempotencyOptions
  * @property {String[]} paths An array of paths for which the feature should be enabled. The mount path must not be included, for example instead of `/parse/functions/myFunction` specifiy `functions/myFunction`. The entries are interpreted as regular expression, for example `functions/.*` matches all functions, `jobs/.*` matches all jobs, `classes/.*` matches all classes, `.*` matches all paths.
  * @property {Number} ttl The duration in seconds after which a request record is discarded from the database, defaults to 300s.
+ */
+
+/**
+ * @interface DashboardOptions
+ * @property {Boolean} cloudFileView whether the Parse Dashboard can view cloud files.
  */
 
 /**

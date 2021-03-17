@@ -363,6 +363,12 @@ export interface IdempotencyOptions {
   ttl: ?number;
 }
 
+export interface DashboardOptions {
+  /* Whether the Parse Dashboard can view cloud files.
+  :DEFAULT: false */
+  cloudFileView: ?boolean;
+}
+
 export interface AccountLockoutOptions {
   /* number of minutes that a locked-out account remains locked out before automatically becoming unlocked. */
   duration: ?number;
