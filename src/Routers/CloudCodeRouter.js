@@ -3,6 +3,7 @@ import Parse from 'parse/node';
 import rest from '../rest';
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 
 const triggers = require('../triggers');
 const middleware = require('../middlewares');
@@ -138,28 +139,34 @@ export class CloudCodeRouter extends PromiseRouter {
   static getCloudCode(req) {
     const config = req.config || {};
     const cloudLocation = path.dirname('' + config.cloud);
-    var cloudFiles = [];
+    var userFiles = {};
+    var checksums = {};
+    var sources = {}
     let timestamp = 0;
+
     function dirLoop(dir) {
       fs.readdirSync(dir).forEach(file => {
         const absolute = path.join(dir, file);
         if (fs.statSync(absolute).isDirectory()) return dirLoop(absolute);
         else {
           timestamp = Math.max(fs.statSync(absolute).ctime, timestamp);
-          return cloudFiles.push(absolute);
+          const relative = absolute.replace(cloudLocation + '/', '')
+          userFiles[relative] = 1;
+          sources[relative] = fs.readFileSync(absolute, 'utf-8');
+          checksums[relative] = crypto.createHash('md5').update(sources[relative]).digest('hex');
+          return
         }
       });
     }
-
     dirLoop(cloudLocation);
-    cloudFiles = cloudFiles.map(i => i.replace(cloudLocation + '/', ''));
     return {
       response: [{
         version:1,
         parseVersion:Parse.CoreManager.get('VERSION'),
         timestamp,
-        versions: JSON.stringify(cloudFiles.reduce((acc, curr) => (acc[curr] = 1, acc), {})),
-        checksums: JSON.stringify(cloudFiles.reduce((acc, curr) => (acc[curr] = 1, acc), {})),
+        userFiles:JSON.stringify(userFiles),
+        checksums:JSON.stringify(checksums),
+        sources:JSON.stringify(sources),
       }]
     };
   }
