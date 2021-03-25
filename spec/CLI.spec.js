@@ -223,6 +223,8 @@ describe('execution', () => {
       'test',
       '--databaseURI',
       'mongodb://localhost/test',
+      '--port',
+      '1339',
     ]);
     childProcess.stdout.on('data', data => {
       data = data.toString();
@@ -243,6 +245,8 @@ describe('execution', () => {
       'test',
       '--databaseURI',
       'mongodb://localhost/test',
+      '--port',
+      '1340',
       '--mountGraphQL',
     ]);
     let output = '';
@@ -267,6 +271,8 @@ describe('execution', () => {
       'test',
       '--databaseURI',
       'mongodb://localhost/test',
+      '--port',
+      '1341',
       '--mountGraphQL',
       '--mountPlayground',
     ]);

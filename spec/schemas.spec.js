@@ -1275,6 +1275,7 @@ describe('schemas', () => {
           },
         },
       }).then(response => {
+        delete response.data.indexes;
         expect(
           dd(response.data, {
             className: '_User',
@@ -1303,6 +1304,7 @@ describe('schemas', () => {
           headers: masterKeyHeaders,
           json: true,
         }).then(response => {
+          delete response.data.indexes;
           expect(
             dd(response.data, {
               className: '_User',
