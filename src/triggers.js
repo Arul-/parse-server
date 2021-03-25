@@ -220,7 +220,7 @@ export function getTriggers(applicationId) {
     Object.keys(store).forEach(name => {
       const value = store[name];
       if (typeof value === 'function') {
-        triggerNames.push({functionName:namespace, className:name});
+        triggerNames.push({triggerName:namespace, className:name});
       } else {
         extractTriggerNames(name, value);
       }
