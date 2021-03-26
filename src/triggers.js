@@ -168,6 +168,18 @@ export function getTrigger(className, triggerType, applicationId) {
   return get(Category.Triggers, `${triggerType}.${className}`, applicationId);
 }
 
+export function getTriggers(applicationId) {
+  const store = _triggerStore[applicationId] && _triggerStore[applicationId][Category.Triggers] || {};
+  const triggerNames = {};
+
+  for (const triggerName in store) {
+    for (const className in store[triggerName]) {
+      triggerNames[`${triggerName}.${className}`] = {className, triggerName};
+    }
+  }
+  return triggerNames;
+}
+
 export async function runTrigger(trigger, name, request, auth) {
   if (!trigger) {
     return;
@@ -210,25 +222,6 @@ export function getFunctionNames(applicationId) {
   };
   extractFunctionNames(null, store);
   return functionNames;
-}
-
-export function getTriggers(applicationId) {
-  const store = _triggerStore[applicationId] && _triggerStore[applicationId][Category.Triggers] || {};
-  const triggerNames = [];
-
-  const extractTriggerNames = (namespace, store) => {
-    Object.keys(store).forEach(name => {
-      const value = store[name];
-      if (typeof value === 'function') {
-        triggerNames.push({triggerName:namespace, className:name});
-      } else {
-        extractTriggerNames(name, value);
-      }
-    });
-  };
-
-  extractTriggerNames(null, store);
-  return triggerNames;
 }
 
 export function getJob(jobName, applicationId) {

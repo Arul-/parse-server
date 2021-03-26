@@ -58,7 +58,13 @@ export class HooksRouter extends PromiseRouter {
           return Promise.resolve({ response: foundTrigger });
         });
     }
-    return Promise.resolve({response: triggers.getTriggers(Parse.applicationId)});
+    return hooksController.getTriggers().then(webTriggers => {
+      const triggerIndex = triggers.getTriggers(Parse.applicationId);
+      for (const trigger of webTriggers) {
+        triggerIndex[`${trigger.triggerName}.${trigger.className}`] = trigger
+      }
+      return {response: Object.values(triggerIndex)};
+    });
   }
 
   handleDelete(req) {
