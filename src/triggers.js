@@ -96,7 +96,7 @@ function getStore(category, name, applicationId) {
 }
 
 function add(category, name, handler, applicationId) {
-  const lastComponent = name.split('.').splice(-1);
+  const lastComponent = name.split('.').splice(-1)[0];
   const store = getStore(category, name, applicationId);
   if (store[lastComponent]) {
     logger.warn(
@@ -107,13 +107,13 @@ function add(category, name, handler, applicationId) {
 }
 
 function remove(category, name, applicationId) {
-  const lastComponent = name.split('.').splice(-1);
+  const lastComponent = name.split('.').splice(-1)[0];
   const store = getStore(category, name, applicationId);
   delete store[lastComponent];
 }
 
 function get(category, name, applicationId) {
-  const lastComponent = name.split('.').splice(-1);
+  const lastComponent = name.split('.').splice(-1)[0];
   const store = getStore(category, name, applicationId);
   return store[lastComponent];
 }
