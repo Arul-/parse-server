@@ -100,7 +100,7 @@ describe('Server Url Checks', () => {
     });
     parseServerProcess.on('close', code => {
       expect(code).toEqual(1);
-      expect(stdout).toBeUndefined();
+      expect(stdout).not.toContain('UnhandledPromiseRejectionWarning');
       expect(stderr).toContain('MongoServerSelectionError');
       done();
     });
