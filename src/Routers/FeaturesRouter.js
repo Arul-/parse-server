@@ -7,6 +7,11 @@ export class FeaturesRouter extends PromiseRouter {
     this.route('GET', '/serverInfo', middleware.promiseEnforceMasterKeyAccess, req => {
       const { config } = req;
       const features = {
+        analytics: {
+          slowQueries: true,
+          performanceAnalysis: true,
+          retentionAnalysis: true,
+        },
         globalConfig: {
           create: true,
           read: true,
