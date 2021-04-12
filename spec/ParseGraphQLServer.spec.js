@@ -43,7 +43,7 @@ describe('ParseGraphQLServer', () => {
   let parseServer;
   let parseGraphQLServer;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     parseServer = await global.reconfigureServer({});
     parseGraphQLServer = new ParseGraphQLServer(parseServer, {
       graphQLPath: '/graphql',
@@ -394,7 +394,7 @@ describe('ParseGraphQLServer', () => {
       objects.push(object1, object2, object3, object4);
     }
 
-    beforeAll(async () => {
+    beforeEach(async () => {
       const expressApp = express();
       httpServer = http.createServer(expressApp);
       expressApp.use('/parse', parseServer.app);
@@ -436,14 +436,11 @@ describe('ParseGraphQLServer', () => {
           },
         },
       });
-    });
-
-    beforeEach(() => {
       spyOn(console, 'warn').and.callFake(() => {});
       spyOn(console, 'error').and.callFake(() => {});
     });
 
-    afterAll(async () => {
+    afterEach(async () => {
       await parseLiveQueryServer.server.close();
       await httpServer.close();
     });
@@ -700,8 +697,12 @@ describe('ParseGraphQLServer', () => {
       });
 
       describe('Relay Specific Types', () => {
-        beforeAll(async () => {
-          await resetGraphQLCache();
+        let clearCache;
+        beforeEach(async () => {
+          if (!clearCache) {
+            await resetGraphQLCache();
+            clearCache = true;
+          }
         });
 
         afterAll(async () => {
@@ -2175,11 +2176,7 @@ describe('ParseGraphQLServer', () => {
       });
 
       describe('Relay Spec', () => {
-        beforeAll(async () => {
-          await resetGraphQLCache();
-        });
-
-        afterAll(async () => {
+        beforeEach(async () => {
           await resetGraphQLCache();
         });
 
@@ -10210,7 +10207,7 @@ describe('ParseGraphQLServer', () => {
         'X-Parse-Javascript-Key': 'test',
       };
       let apolloClient;
-      beforeAll(async () => {
+      beforeEach(async () => {
         const expressApp = express();
         httpServer = http.createServer(expressApp);
         parseGraphQLServer = new ParseGraphQLServer(parseServer, {
@@ -10243,7 +10240,7 @@ describe('ParseGraphQLServer', () => {
         });
       });
 
-      afterAll(async () => {
+      afterEach(async () => {
         await httpServer.close();
       });
 
@@ -10333,6 +10330,7 @@ describe('ParseGraphQLServer', () => {
         'X-Parse-Javascript-Key': 'test',
       };
       let apolloClient;
+
       beforeEach(async () => {
         const expressApp = express();
         httpServer = http.createServer(expressApp);
@@ -10523,31 +10521,33 @@ describe('ParseGraphQLServer', () => {
       };
       let apolloClient;
 
-      beforeAll(async () => {
-        const expressApp = express();
-        httpServer = http.createServer(expressApp);
-        parseGraphQLServer = new ParseGraphQLServer(parseServer, {
-          graphQLPath: '/graphql',
-          graphQLCustomTypeDefs: ({ autoSchema, stitchSchemas }) =>
-            stitchSchemas({ subschemas: [autoSchema] }),
-        });
+      beforeEach(async () => {
+        if (!httpServer) {
+          const expressApp = express();
+          httpServer = http.createServer(expressApp);
+          parseGraphQLServer = new ParseGraphQLServer(parseServer, {
+            graphQLPath: '/graphql',
+            graphQLCustomTypeDefs: ({ autoSchema, stitchSchemas }) =>
+              stitchSchemas({ subschemas: [autoSchema] }),
+          });
 
-        parseGraphQLServer.applyGraphQL(expressApp);
-        await new Promise(resolve => httpServer.listen({ port: 13377 }, resolve));
-        const httpLink = createUploadLink({
-          uri: 'http://localhost:13377/graphql',
-          fetch,
-          headers,
-        });
-        apolloClient = new ApolloClient({
-          link: httpLink,
-          cache: new InMemoryCache(),
-          defaultOptions: {
-            query: {
-              fetchPolicy: 'no-cache',
+          parseGraphQLServer.applyGraphQL(expressApp);
+          await new Promise(resolve => httpServer.listen({ port: 13377 }, resolve));
+          const httpLink = createUploadLink({
+            uri: 'http://localhost:13377/graphql',
+            fetch,
+            headers,
+          });
+          apolloClient = new ApolloClient({
+            link: httpLink,
+            cache: new InMemoryCache(),
+            defaultOptions: {
+              query: {
+                fetchPolicy: 'no-cache',
+              },
             },
-          },
-        });
+          });
+        }
       });
 
       afterAll(async () => {

@@ -204,7 +204,7 @@ describe('SchemaController', () => {
       return (
         config.database
           .loadSchema()
-        // Create a valid class
+          // Create a valid class
           .then(schema => schema.validateObject('Stuff', { foo: 'bar' }))
           .then(schema => {
             const find = {};
@@ -253,7 +253,7 @@ describe('SchemaController', () => {
     return (
       config.database
         .loadSchema()
-      // Create a valid class
+        // Create a valid class
         .then(schema => schema.validateObject('Stuff', { foo: 'bar' }))
         .then(schema => {
           const count = {};
@@ -851,7 +851,7 @@ describe('SchemaController', () => {
     await reconfigureServer();
     config.database
       .loadSchema()
-    //as `_Role` is always created by default, we only get it here
+      //as `_Role` is always created by default, we only get it here
       .then(schema => schema.getOneSchema('_Role'))
       .then(actualSchema => {
         const expectedSchema = {

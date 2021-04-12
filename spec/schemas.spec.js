@@ -2325,7 +2325,7 @@ describe('schemas', () => {
           const perm = {
             find: {},
           };
-            // let the user find
+          // let the user find
           perm['find'][user.id] = true;
           return setPermissionsOnClass('AClass', perm);
         });

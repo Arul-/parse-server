@@ -164,22 +164,22 @@ describe('ParseServerRESTController', () => {
 
   if (
     (semver.satisfies(process.env.MONGODB_VERSION, '>=4.0.4') &&
-          process.env.MONGODB_TOPOLOGY === 'replicaset' &&
-          process.env.MONGODB_STORAGE_ENGINE === 'wiredTiger') ||
-      process.env.PARSE_SERVER_TEST_DB === 'postgres'
+      process.env.MONGODB_TOPOLOGY === 'replicaset' &&
+      process.env.MONGODB_STORAGE_ENGINE === 'wiredTiger') ||
+    process.env.PARSE_SERVER_TEST_DB === 'postgres'
   ) {
     describe('transactions', () => {
       beforeEach(async () => {
         await TestUtils.destroyAllDataPermanently(true);
         if (
           semver.satisfies(process.env.MONGODB_VERSION, '>=4.0.4') &&
-            process.env.MONGODB_TOPOLOGY === 'replicaset' &&
-            process.env.MONGODB_STORAGE_ENGINE === 'wiredTiger'
+          process.env.MONGODB_TOPOLOGY === 'replicaset' &&
+          process.env.MONGODB_STORAGE_ENGINE === 'wiredTiger'
         ) {
           await reconfigureServer({
             databaseAdapter: undefined,
             databaseURI:
-                'mongodb://localhost:27017/parseServerMongoAdapterTestDatabase?replicaSet=replicaset',
+              'mongodb://localhost:27017/parseServerMongoAdapterTestDatabase?replicaSet=replicaset',
           });
         } else {
           await reconfigureServer();

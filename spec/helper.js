@@ -429,7 +429,7 @@ global.it_exclude_dbs = excluded => {
 global.it_only_db = db => {
   if (
     process.env.PARSE_SERVER_TEST_DB === db ||
-      (!process.env.PARSE_SERVER_TEST_DB && db == 'mongo')
+    (!process.env.PARSE_SERVER_TEST_DB && db == 'mongo')
   ) {
     return it;
   } else {
