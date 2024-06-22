@@ -1,5 +1,5 @@
 # Build stage
-FROM node:lts-alpine as build
+FROM node:20.14.0-alpine3.20 as build
 
 RUN apk update; \
   apk add git;
@@ -14,7 +14,7 @@ COPY . .
 RUN npm run build
 
 # Release stage
-FROM node:lts-alpine as release
+FROM node:20.14.0-alpine3.20 as release
 
 RUN apk update; \
   apk add git;
